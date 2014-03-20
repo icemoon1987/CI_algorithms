@@ -175,5 +175,24 @@ def kcluster(rows, distance=pearson, k=4):
 	return bestmatches
 
 
-#TODO: multidimensional scaling
+# Multidimensional scaling
+def scaledown(data, distance=pearson, rate=0.01):
+
+	n = len(data)
+
+	# Calculate the real distance between each data item
+	realdist = [ [distance(data[i], data[j]) for j in range(n)] for i in range(0,n)]
+
+	outersum = 0.0
+
+	# Set initial positions in two-dimensional space
+	loc = [ [random.random(), random.random()] for i in range(n) ]
+
+	# Set initial fake distances
+	fakedist = [ [0.0 for j in range(n)] for i in range(n) ]
+
+	lasterror = None
+
+	return
+
 
