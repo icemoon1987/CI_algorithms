@@ -169,4 +169,46 @@ def transformPrefs(prefs):
 	return result
 
 
+def calculateSimilarItems(prefs, n=10):
+
+	result={}
+
+	itemPrefs=transformPrefs(prefs)
+	c = 0
+
+	for item in itemPrefs:
+		c = c + 1
+		if c % 100 == 0:
+			print "%d / %d" % (c, len(itemPrefs))
+
+		scores = topMatches(itemPrefs, item, n=n, similarity=sim_distance)
+		result[item]=scores
+
+	return result
+
+
+# Get recommenddation based on items
+def getRecommendedItems(prefs, itemMatch, user):
+
+	userRatings=prefs[user]
+	scores={}
+	totalSim={}
+
+	for (item, rating) in userRatings.items():
+		for (similarity, item2) in itemMatch[item]:
+			if item2 in userRatings:
+				continue
+
+			scores.setdefault(item2, 0)
+			scores[item2] += similarity * rating
+
+			totalSim.setdefault(item2, 0)
+			totalSim[item2] += similarity
+
+	rankings=[ (score/totalSim[item], item) for item, score in scores.items() ]
+
+	rankings.sort()
+	rankings.reverse()
+
+	return rankings
 
