@@ -193,6 +193,53 @@ def scaledown(data, distance=pearson, rate=0.01):
 
 	lasterror = None
 
-	return
+	for m in range(0, 1000):
+		for i in range(n):
+			for j in range(n):
+
+				# Calculate the distance of fack points
+				fakedist[i][j] = sqrt( sum([ pow(loc[i][x]-loc[j][x],2) for x in range(len(loc[i]))]) )
+
+		# Now, move the fack points according to fack distance and real distance
+		grad = [ [0.0, 0.0] for i in range(n) ]
+
+		totalerror = 0
+		for k in range(n):
+			for j in range(n):
+				if j == k: continue
+
+				errorterm = ( fakedist[j][k] - realdist[j][k]) / realdist[j][k]
+
+				grad[k][0] += ( (loc[k][0] - loc[j][0])/fakedist[j][k] ) * errorterm
+				grad[k][1] += ( (loc[k][1] - loc[j][1])/fakedist[j][k] ) * errorterm
+
+				totalerror += abs(errorterm)
+		print totalerror
+
+		# If the totalerror is larger than the last totalerror, stop
+		if lasterror and lasterror < totalerror: break
+
+		lasterror = totalerror
+
+		for k in range(n):
+			loc[k][0] -= rate * grad[k][0]
+			loc[k][1] -= rate * grad[k][1]
+
+
+	return loc
+
+
+def draw2d(data, labels, jpeg = 'mds2d.jpg'):
+	img = Image.new('RGB', (2000, 2000), (255, 255, 255))
+	draw = ImageDraw.Draw(img)
+
+	for i in range(len(data)):
+		x = (data[i][0] + 0.5) * 1000
+		y = (data[i][1] + 0.5) * 1000
+		draw.text((x,y), labels[i], (0, 0, 0))
+
+	img.save(jpeg, 'JPEG')
+
+
 
 
