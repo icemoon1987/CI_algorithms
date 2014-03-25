@@ -10,9 +10,8 @@ import os
 import platform
 import time
 
-baseUrl = "http://segaran.com/wiki/"
 
-def openUrl(self, url, repeat = 5):
+def openUrl(url, repeat = 5):
 	print ""
 	print "Opening Url: ", url
 
@@ -32,10 +31,44 @@ def openUrl(self, url, repeat = 5):
 
 	return page
 
-page = openUrl(baseUrl)
+baseUrl = "http://segaran.com/wiki/"
+storePath = "./wiki/"
 
+# Create store directory
+if not os.path.exists(storePath):
+	os.mkdir(storePath)
+else:
+	print "Already has ", storePath
+
+# Open and store index.html
+page = openUrl(baseUrl)
+f = open(storePath+"index.html", 'w')
+f.write(page)
+f.close
+
+# Find all urls
 soup = BeautifulSoup(page, "html5lib")
 
+urls = soup.find_all('a')
+
+
+# Open and store every urls
+for link in urls:
+
+	linkname = link['href']
+
+	if -1 == linkname.find("html"):
+		continue
+
+	if os.path.exists(storePath+linkname):
+		print "Already has ", storePath+linkname
+		continue
+
+	print "Downloading ", baseUrl+linkname, " ..."
+	page = openUrl(baseUrl+linkname)
+	f = open(storePath+linkname, 'w')
+	f.write(page)
+	f.close
 
 
 
