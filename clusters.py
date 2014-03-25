@@ -1,6 +1,7 @@
 # Cluster algorithems
 
 from math import sqrt
+from PIL import Image, ImageDraw
 import random
 
 def readfile(filename):
