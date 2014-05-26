@@ -44,7 +44,43 @@ class crawler:
 
 	# Crawl pages
 	def crawl(self, pages, depth=2):
-		pass
+		
+		for i in range(depth):
+			newpages = set()
+
+			# Crawl every pages
+			for page in pages:
+
+				# Open a page
+				try:
+					c = urllib2.urlopen(page)
+				except:
+					print "Could not open %s" % page
+					continue
+
+				# Analize and index a page
+				soup = BeautifulSoup(c.read())
+				self.addtoindex(page, soup)
+
+				links = soup('a')
+				for link in links:
+					if( 'href' in dict(link.attrs)):
+						url = urljoin(page, link['href'])
+
+						if url.find("'") != -1: continue
+
+						url = url.split('#')[0]
+
+						if url[0:4] == 'http' and not self.isindexed(url):
+							newpages.add(url)
+
+						linkText = self.gettextonly(link)
+						self.addlinkref(page, url, linkText)
+
+				self.dbcommit()
+
+			pages = newpages
+
 
 	# Create database tables
 	def createindextables(self):
